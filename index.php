@@ -11,7 +11,7 @@ define('BASE_PATH', __DIR__);
 define('BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']));
 
 // Autoload required files
-require_once BASE_PATH . '/config/Database.php';
+require_once BASE_PATH . '/config/database.php';
 require_once BASE_PATH . '/models/BaseModel.php';
 require_once BASE_PATH . '/models/Session.php';
 require_once BASE_PATH . '/config/Router.php';

@@ -129,11 +129,16 @@ class Router {
     public function dispatch() {
         $uri = trim($_SERVER['REQUEST_URI'], '/');
         $uri = parse_url($uri, PHP_URL_PATH);
-        $uri = str_replace('eschool_m/', '', $uri); // Remove base path if needed
         
-        if ($uri === '' || $uri === 'eschool_m') {
-        header('Location: ' . self::url('dashboard'));
-        exit;
+        // Auto-detect base folder from script path
+        $basePath = trim(dirname($_SERVER['SCRIPT_NAME']), '/');
+        if (!empty($basePath)) {
+            $uri = preg_replace('#^' . preg_quote($basePath, '#') . '/?#', '', $uri);
+        }
+        
+        if ($uri === '' || $uri === $basePath) {
+            header('Location: ' . self::url('dashboard'));
+            exit;
         }
         
         if (isset($this->routes[$uri])) {
@@ -231,7 +236,11 @@ class Router {
     }
     
     public static function url($path = '') {
-        $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/eschool_m/';
+        // Auto-detect base URL from script path
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $basePath = dirname($_SERVER['SCRIPT_NAME']);
+        $basePath = ($basePath === '/' || $basePath === '\\') ? '' : $basePath;
+        $baseUrl = $protocol . '://' . $_SERVER['HTTP_HOST'] . $basePath . '/';
         return $baseUrl . ltrim($path, '/');
     }
 }
